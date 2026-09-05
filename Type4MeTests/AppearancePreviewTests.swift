@@ -77,10 +77,9 @@ final class AppearancePreviewTests: XCTestCase {
     }
 
     func testRecordingChromeWidthDesignTokens() {
-        // Dual-button chrome: Finish(45) + Cancel(35) + LeadingInset(5) + TrailingInset(10) + Gap*2(16) + Safety(16) = 127
-        XCTAssertEqual(TF.recordingChromeWidth, 127)
-        // Single-button chrome: Finish(45) + LeadingInset(5) + TrailingInset(10) + Gap(8) + Safety(16) = 84
-        XCTAssertEqual(TF.recordingSingleButtonChromeWidth, 84)
+        // Fixed control chrome; the view adds the inset for its trailing boundary.
+        XCTAssertEqual(TF.recordingChromeWidth, 111)
+        XCTAssertEqual(TF.recordingSingleButtonChromeWidth, 68)
         // Difference is exactly one cancel control size (35) plus one control gap (8)
         XCTAssertEqual(
             TF.recordingChromeWidth - TF.recordingSingleButtonChromeWidth,

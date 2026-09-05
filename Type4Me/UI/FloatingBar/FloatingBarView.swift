@@ -145,6 +145,7 @@ struct FloatingBarView<S: FloatingBarState>: View {
     @State private var modeHintTask: Task<Void, Never>?
     @State private var recordingActionLocked = false
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage(RecordingTheme.storageKey) private var theme = RecordingTheme.defaultValue
     @AppStorage(RecordingIndicatorStyle.storageKey) private var indicatorStyle = RecordingIndicatorStyle.defaultValue
     @AppStorage(LiveTranscriptDisplayPreference.storageKey) private var showLiveTranscript = LiveTranscriptDisplayPreference.defaultValue
@@ -198,7 +199,21 @@ struct FloatingBarView<S: FloatingBarState>: View {
     }
 
     private var currentRecordingChromeWidth: CGFloat {
-        effectiveShowsCancelButton ? TF.recordingChromeWidth : TF.recordingSingleButtonChromeWidth
+        (effectiveShowsCancelButton ? TF.recordingChromeWidth : TF.recordingSingleButtonChromeWidth)
+            + recordingTextTrailingInset
+    }
+
+    private var recordingTextTrailingInset: CGFloat {
+        guard effectiveShowsCancelButton else { return TF.recordingTextEdgeInset }
+
+        // The orb sits inside its Metal frame; the cancel circle fills its
+        // frame. Match the orb's transparent inset on the cancel side so the
+        // text is centered between the visible circles, not their hit areas.
+        // Use the resting radius: following speech pulses would move the text.
+        let preset = recordingVisualStyle.preset
+        let radiusScale = preset.isAnimated && !reduceMotion ? OrbUniformShaping.restRadiusScale : 1
+        let visibleRadius = CGFloat(preset.uniforms[OrbUniformShaping.radius] * radiusScale)
+        return TF.recordingFinishControlSize * max(0, 1 - visibleRadius) / 2
     }
 
     private var effectiveShowsModeName: Bool {
@@ -498,6 +513,12 @@ struct FloatingBarView<S: FloatingBarState>: View {
             .background {
                 capsuleBackground
                     .clipShape(barShape)
+                    .shadow(
+                        color: .black.opacity(effectiveTheme == .light ? 0.14 : 0.20),
+                        radius: 3,
+                        x: 0,
+                        y: 1
+                    )
             }
             .overlay {
                 // The feedback border only exists in `.done`/`.error`; fade it in
@@ -777,8 +798,11 @@ struct FloatingBarView<S: FloatingBarState>: View {
         // The text is an overlay on a flexible Color.clear so it never
         // participates in the HStack layout: it can never push the cancel
         // button, and the cancel button can never overlap it. The clear region
-        // is exactly the space between the two controls; the text is masked to
-        // it, so overflow only fades on the leading edge.
+        // uses the same trailing inset as the width calculation: optical
+        // spacing next to cancel, or edge clearance when cancel is hidden.
+        // Mask before padding so the fades stay inside the text viewport.
+        // Center the listening prompt in this available text area. Hiding
+        // cancel returns its full width to the text; do not center on the capsule.
         Color.clear
             .overlay(alignment: isLiveTranscriptTrailingAligned ? .trailing : .center) {
                 recordingTextContent
@@ -793,13 +817,20 @@ struct FloatingBarView<S: FloatingBarState>: View {
                             startPoint: .leading,
                             endPoint: .trailing
                         )
-                        .frame(width: 14)
+                        .frame(width: TF.recordingTextEdgeFadeWidth)
                         Rectangle()
+                        LinearGradient(
+                            colors: [.white, .clear],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                        .frame(width: TF.recordingTextEdgeFadeWidth)
                     }
                 } else {
                     Rectangle()
                 }
             }
+            .padding(.trailing, recordingTextTrailingInset)
             .background {
                 FloatingBarHoverTracker { hovered in
                     updateTranscriptHover(hovered)

@@ -139,6 +139,8 @@ enum TF {
     static let recordingTrailingInset: CGFloat = 10
     static let recordingEdgeInset: CGFloat = recordingTrailingInset
     static let recordingControlGap: CGFloat = 8
+    static let recordingTextEdgeInset: CGFloat = 8
+    static let recordingTextEdgeFadeWidth: CGFloat = 14
     static let recordingTooltipGap: CGFloat = 5
     static let recordingTooltipMaxWidth: CGFloat = 180
     static let recordingCapsuleSpringResponse = 0.3
@@ -151,17 +153,17 @@ enum TF {
         0,
         recordingTooltipMaxWidth / 2 - recordingLeadingInset - recordingFinishControlSize / 2
     )
+    // Fixed control chrome. FloatingBarView adds the text inset for the
+    // actual trailing boundary: the visible cancel circle or the capsule edge.
     static let recordingChromeWidth: CGFloat = recordingFinishControlSize
         + recordingCancelControlSize
         + recordingLeadingInset
         + recordingTrailingInset
         + recordingControlGap * 2
-        + 16
     static let recordingSingleButtonChromeWidth: CGFloat = recordingFinishControlSize
         + recordingLeadingInset
         + recordingTrailingInset
         + recordingControlGap
-        + 16
 
     // MARK: Transcript Popup (hover preview above bar)
 

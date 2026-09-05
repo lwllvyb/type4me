@@ -1,6 +1,17 @@
 {
-  "latest": "2.6.0",
+  "latest": "2.6.1",
   "releases": [
+    {
+      "version": "2.6.1",
+      "date": "2026-09-05",
+      "notes": "- 修复“倾听中”在显示或隐藏取消按钮时的居中位置\n- 按录音球与取消按钮的可见边缘统一文字间距，缩小左侧空隙并保留右侧留白\n- 长转写文本两端加入渐隐效果，避免文字紧贴边缘\n- 增加轻微阴影，让纯白背景下的悬浮窗边界更清楚",
+      "cloud_dmg_url": "https://github.com/joewongjc/type4me/releases/download/v2.6.1/Type4Me-v2.6.1-cloud.dmg",
+      "cloud_dmg_size": 12601105,
+      "cloud_dmg_sha256": "62db023144555dddda4e774c78914e2bc04a9f0883d294d4fc1fe6e9806ae7a5",
+      "local_dmg_url": "https://github.com/joewongjc/type4me/releases/download/v2.6.1/Type4Me-v2.6.1-local-apple-silicon.dmg",
+      "local_dmg_size": 717405974,
+      "local_dmg_sha256": "b87cc03da86bc78624ed1a7be104d2c1e08f6da965dbdab0706d4c8413e3e325"
+    },
     {
       "version": "2.6.0",
       "date": "2026-09-04",
